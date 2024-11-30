@@ -25,9 +25,7 @@
             <th>Bazar</th>
           </tr>
         </thead>
-        <tbody id="table-body">
-          <!-- Rows will be populated dynamically -->
-        </tbody>
+        <tbody id="table-body"></tbody>
       </table>
     </section>
 
@@ -52,25 +50,17 @@
       }
 
       function renderTable(data) {
-        tableBody.innerHTML = ""; // Clear the table body
-        for (let day = 1; day <= 31; day++) {
-          const rowData = data.find(row => row.Day == day) || {
-            Day: day,
-            Ahad: "",
-            Abdullah: "",
-            Maher: "",
-            Hasan: "",
-            Bazar: ""
-          };
+        tableBody.innerHTML = "";
 
+        data.forEach(row => {
           const tr = document.createElement("tr");
-          Object.values(rowData).forEach(value => {
+          Object.values(row).forEach(value => {
             const td = document.createElement("td");
-            td.textContent = value;
+            td.textContent = value || ""; // Handle empty cells
             tr.appendChild(td);
           });
           tableBody.appendChild(tr);
-        }
+        });
       }
 
       window.onload = loadData;
