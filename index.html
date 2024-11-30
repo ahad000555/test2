@@ -7,16 +7,16 @@
     <section class="hero is-link is-bold">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">Meal Calculation</h1>
+          <h1 class="title">Meal Data</h1>
         </div>
       </div>
     </section>
 
     <section class="container m-4">
-      <h2 class="title is-4">Monthly Meal Data</h2>
+      <h2 class="title is-4">Submitted Meal Data</h2>
       <table class="table is-striped is-hoverable is-fullwidth" id="data-table">
         <thead>
-          <tr id="table-headers">
+          <tr>
             <th>Day</th>
             <th>Ahad</th>
             <th>Abdullah</th>
@@ -25,12 +25,17 @@
             <th>Bazar</th>
           </tr>
         </thead>
-        <tbody id="table-body"></tbody>
+        <tbody id="table-body">
+          <!-- Rows will be populated dynamically -->
+        </tbody>
       </table>
     </section>
 
+    <div id="message" style="margin: 20px; font-weight: bold;"></div>
+
     <script>
       const tableBody = document.getElementById("table-body");
+      const message = document.getElementById("message");
 
       const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwKvPfVHmjPnQrLk1IgWDVNJ77UMUxt98aZNhD1O4VAqu3e8GlYXdXVUKzFGCHbvajD/exec"; // Replace with your Apps Script URL
 
@@ -42,26 +47,30 @@
           })
           .catch(error => {
             console.error("Error fetching data:", error);
+            message.textContent = "Error loading data.";
           });
       }
 
       function renderTable(data) {
-        tableBody.innerHTML = "";
+        tableBody.innerHTML = ""; // Clear the table body
+        for (let day = 1; day <= 31; day++) {
+          const rowData = data.find(row => row.Day == day) || {
+            Day: day,
+            Ahad: "",
+            Abdullah: "",
+            Maher: "",
+            Hasan: "",
+            Bazar: ""
+          };
 
-        if (data.length === 0) {
-          tableBody.innerHTML = "<tr><td colspan='6'>No data available</td></tr>";
-          return;
-        }
-
-        data.forEach(row => {
           const tr = document.createElement("tr");
-          ["Day", "Ahad", "Abdullah", "Maher", "Hasan", "Bazar"].forEach(field => {
+          Object.values(rowData).forEach(value => {
             const td = document.createElement("td");
-            td.textContent = row[field] || "-";
+            td.textContent = value;
             tr.appendChild(td);
           });
           tableBody.appendChild(tr);
-        });
+        }
       }
 
       window.onload = loadData;
