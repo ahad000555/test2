@@ -4,73 +4,67 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css" />
   </head>
   <body>
-    <section class="hero is-primary is-bold">
+    <section class="hero is-link is-bold">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">Data Submission</h1>
+          <h1 class="title">Meal Calculation</h1>
         </div>
       </div>
     </section>
 
-    <form id="form" class="container m-4 pl-4">
-      <div class="field">
-        <label class="label">Client Name</label>
-        <div class="control">
-          <input class="input" type="text" placeholder="Your Client Name" name="Client Name" required />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Email</label>
-        <div class="control">
-          <input class="input" type="email" placeholder="Your Email" name="Email" required />
-        </div>
-      </div>
-      <div class="field">
-        <label class="label">Password</label>
-        <div class="control">
-          <input class="input" type="password" placeholder="Your Password" name="Password" required />
-        </div>
-      </div>
-      <div class="field is-grouped">
-        <div class="control">
-          <button class="button is-primary" type="submit">Submit</button>
-        </div>
-      </div>
-    </form>
-
-    <div id="message" style="margin: 20px; font-weight: bold;"></div>
+    <section class="container m-4">
+      <h2 class="title is-4">Monthly Meal Data</h2>
+      <table class="table is-striped is-hoverable is-fullwidth" id="data-table">
+        <thead>
+          <tr id="table-headers">
+            <th>Day</th>
+            <th>Ahad</th>
+            <th>Abdullah</th>
+            <th>Maher</th>
+            <th>Hasan</th>
+            <th>Bazar</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </section>
 
     <script>
-      const form = document.getElementById("form");
-      const message = document.getElementById("message");
+      const tableBody = document.getElementById("table-body");
 
-      const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzKjehavT6TXMBhvjQUHeC5Ys04cH1wnuf96dsPk0vqSLbMumlHU2IX0JqgRXngyFdW/exec"; // Replace with your Apps Script URL
+      const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwKvPfVHmjPnQrLk1IgWDVNJ77UMUxt98aZNhD1O4VAqu3e8GlYXdXVUKzFGCHbvajD/exec"; // Replace with your Apps Script URL
 
-      form.addEventListener("submit", function (e) {
-        e.preventDefault();
-        const formData = new FormData(form);
-        const formParams = new URLSearchParams(formData).toString();
-
-        message.textContent = "Submitting...";
-
-        fetch(WEB_APP_URL, {
-          method: "POST",
-          body: formParams,
-          headers: { "Content-Type": "application/x-www-form-urlencoded" }
-        })
-          .then(response => {
-            if (!response.ok) throw new Error("Failed to submit data.");
-            return response.text();
-          })
-          .then(() => {
-            message.textContent = "Data submitted successfully!";
-            form.reset();
+      function loadData() {
+        fetch(WEB_APP_URL)
+          .then(response => response.json())
+          .then(data => {
+            renderTable(data);
           })
           .catch(error => {
-            console.error("Error:", error);
-            message.textContent = "Error submitting data.";
+            console.error("Error fetching data:", error);
           });
-      });
+      }
+
+      function renderTable(data) {
+        tableBody.innerHTML = "";
+
+        if (data.length === 0) {
+          tableBody.innerHTML = "<tr><td colspan='6'>No data available</td></tr>";
+          return;
+        }
+
+        data.forEach(row => {
+          const tr = document.createElement("tr");
+          ["Day", "Ahad", "Abdullah", "Maher", "Hasan", "Bazar"].forEach(field => {
+            const td = document.createElement("td");
+            td.textContent = row[field] || "-";
+            tr.appendChild(td);
+          });
+          tableBody.appendChild(tr);
+        });
+      }
+
+      window.onload = loadData;
     </script>
   </body>
 </html>
