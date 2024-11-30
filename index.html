@@ -7,14 +7,14 @@
     <section class="hero is-link is-bold">
       <div class="hero-body">
         <div class="container">
-          <h1 class="title">Meal Data</h1>
+          <h1 class="title">Meal Calculation</h1>
         </div>
       </div>
     </section>
 
     <section class="container m-4">
-      <h2 class="title is-4">Submitted Meal Data</h2>
-      <table class="table is-striped is-hoverable is-fullwidth" id="data-table">
+      <h2 class="title is-4">Monthly Meal Data</h2>
+      <table class="table is-striped is-hoverable is-fullwidth">
         <thead>
           <tr>
             <th>Day</th>
@@ -29,11 +29,8 @@
       </table>
     </section>
 
-    <div id="message" style="margin: 20px; font-weight: bold;"></div>
-
     <script>
       const tableBody = document.getElementById("table-body");
-      const message = document.getElementById("message");
 
       const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwKvPfVHmjPnQrLk1IgWDVNJ77UMUxt98aZNhD1O4VAqu3e8GlYXdXVUKzFGCHbvajD/exec"; // Replace with your Apps Script URL
 
@@ -45,22 +42,23 @@
           })
           .catch(error => {
             console.error("Error fetching data:", error);
-            message.textContent = "Error loading data.";
           });
       }
 
       function renderTable(data) {
         tableBody.innerHTML = "";
 
-        data.forEach(row => {
+        for (let i = 1; i <= 31; i++) {
+          const row = data.find(row => row.Day == i) || { Day: i, Ahad: "", Abdullah: "", Maher: "", Hasan: "", Bazar: "" };
+
           const tr = document.createElement("tr");
-          Object.values(row).forEach(value => {
+          ["Day", "Ahad", "Abdullah", "Maher", "Hasan", "Bazar"].forEach(field => {
             const td = document.createElement("td");
-            td.textContent = value || ""; // Handle empty cells
+            td.textContent = row[field] || "-";
             tr.appendChild(td);
           });
           tableBody.appendChild(tr);
-        });
+        }
       }
 
       window.onload = loadData;
